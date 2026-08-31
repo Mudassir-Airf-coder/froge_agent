@@ -2,26 +2,15 @@
 
 from __future__ import annotations
 
-import subprocess
 from typing import Optional
 
 from froge.config import FrogeSettings, load_settings
 from froge.discovery import discover_executable
+from froge.errors import ErrorKind
+from froge.executil import run_command
 from froge.manifest import ToolManifest
 from froge.results import OperationResult, Status
 from froge.state import ComponentState, desired_action
-
-
-def _run(cmd: list[str], timeout: int = 120) -> tuple[int, str, str]:
-    try:
-        p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout, check=False)
-        return p.returncode, (p.stdout or "").strip(), (p.stderr or "").strip()
-    except FileNotFoundError:
-        return 127, "", "not found"
-    except subprocess.TimeoutExpired:
-        return 124, "", "timeout"
-    except Exception as exc:
-        return 1, "", str(exc)
 
 
 def discover_tool(tool: ToolManifest) -> OperationResult:
@@ -32,6 +21,7 @@ def discover_tool(tool: ToolManifest) -> OperationResult:
             component=tool.id,
             state=ComponentState.UNKNOWN.value,
             message=f"{tool.id}: no executable (REQUIRES VALIDATION)",
+            data={"error_kind": ErrorKind.REQUIRES_VALIDATION.value},
         )
     vargs = (
         tool.version_command[1:]
@@ -48,10 +38,7 @@ def discover_tool(tool: ToolManifest) -> OperationResult:
         data={"version": item.version, "path": item.path},
     )
     result.add_evidence(
-        "discovery",
-        summary=f"{tool.id}={item.state.value}",
-        version=item.version,
-        path=item.path,
+        "discovery", summary=f"{tool.id}={item.state.value}", version=item.version, path=item.path
     )
     return result
 
@@ -79,6 +66,7 @@ def install_tool(tool: ToolManifest, settings: Optional[FrogeSettings] = None) -
             component=tool.id,
             state=ComponentState.UNKNOWN.value,
             message=f"{tool.id}: installation_method=unknown or no install_command (REQUIRES VALIDATION)",
+            data={"error_kind": ErrorKind.REQUIRES_VALIDATION.value},
         )
     if settings.dry_run:
         return OperationResult(
@@ -89,28 +77,22 @@ def install_tool(tool: ToolManifest, settings: Optional[FrogeSettings] = None) -
             message=f"{tool.id}: dry_run — would run {tool.install_command}",
             data={"planned_command": tool.install_command},
         )
-    code, out, err = _run(tool.install_command, timeout=settings.command_timeout_seconds)
-    result = OperationResult(
+    exec_result = run_command(
+        tool.install_command,
+        timeout=settings.command_timeout_seconds,
         operation="install.install",
         component=tool.id,
-        status=Status.PASS if code == 0 else Status.FAIL,
-        message=f"{tool.id}: install exit={code}",
-        data={"stdout": out[:500], "stderr": err[:500]},
     )
-    result.add_evidence(
-        "install_command",
-        summary=" ".join(tool.install_command),
-        exit_code=code,
-        stdout=out[:300],
-    )
-    if code == 0:
+    if exec_result.status == Status.PASS:
         disc2 = discover_tool(tool)
-        result.state = disc2.state
-        result.evidence.extend(disc2.evidence)
+        exec_result.state = disc2.state
+        exec_result.evidence.extend(disc2.evidence)
+        exec_result.message = f"{tool.id}: install OK → {disc2.state}"
     else:
-        result.state = ComponentState.FAILED.value
-        result.errors.append(err or f"exit {code}")
-    return result
+        exec_result.state = ComponentState.FAILED.value
+        if not exec_result.errors:
+            exec_result.errors.append("INSTALL_FAILED")
+    return exec_result
 
 
 def update_tool(tool: ToolManifest, settings: Optional[FrogeSettings] = None) -> OperationResult:
@@ -130,13 +112,11 @@ def update_tool(tool: ToolManifest, settings: Optional[FrogeSettings] = None) ->
             message=f"{tool.id}: dry_run — would run {tool.update_command}",
             data={"planned_command": tool.update_command},
         )
-    code, out, err = _run(tool.update_command, timeout=settings.command_timeout_seconds)
-    return OperationResult(
+    return run_command(
+        tool.update_command,
+        timeout=settings.command_timeout_seconds,
         operation="install.update",
         component=tool.id,
-        status=Status.PASS if code == 0 else Status.FAIL,
-        message=f"{tool.id}: update exit={code}",
-        data={"stdout": out[:500], "stderr": err[:500]},
     )
 
 
@@ -149,13 +129,13 @@ def repair_tool(tool: ToolManifest, settings: Optional[FrogeSettings] = None) ->
                 status=Status.SKIP,
                 component=tool.id,
                 message=f"{tool.id}: dry_run — would repair",
+                data={"planned_command": tool.repair_command},
             )
-        code, out, err = _run(tool.repair_command, timeout=settings.command_timeout_seconds)
-        return OperationResult(
+        return run_command(
+            tool.repair_command,
+            timeout=settings.command_timeout_seconds,
             operation="install.repair",
             component=tool.id,
-            status=Status.PASS if code == 0 else Status.FAIL,
-            message=f"{tool.id}: repair exit={code}",
         )
     return install_tool(tool, settings)
 
@@ -183,13 +163,7 @@ def apply_desired_action(
     if action == "START":
         settings = settings or load_settings()
         if tool.start_command and not settings.dry_run:
-            code, out, err = _run(tool.start_command)
-            return OperationResult(
-                operation="install.start",
-                component=tool.id,
-                status=Status.PASS if code == 0 else Status.FAIL,
-                message=f"{tool.id}: start exit={code}",
-            )
+            return run_command(tool.start_command, operation="install.start", component=tool.id)
         return OperationResult(
             operation="install.start",
             status=Status.SKIP,
