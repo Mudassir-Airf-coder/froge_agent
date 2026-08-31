@@ -2,30 +2,31 @@
 
 **Last updated:** 2026-08-31
 
-## Project Snapshot
+## Snapshot
 
-| Question | Answer |
-|----------|--------|
-| Current phase | Implementation I-1 + I-2 complete |
-| Last completed | Project foundation + environment discovery |
-| Next | I-3 Dependency mgmt → I-4 Installation engine → I-5 Health → I-6 Bootstrap |
-| Out of scope | MCP / skills catalog / plugins / frontend |
+| Item | Value |
+|------|-------|
+| Phase | Core bootstrap/orchestration implementation |
+| Tests | **29 passed** |
+| CLI | status, tools, doctor, plan, bootstrap (dry-run verified) |
+| Next | Push remaining source modules if any missing; concrete tool adapters after research |
 
-## Status Board
+## Board
 
-- ✅ I-1-001 Project foundation (packaging, config, logging, state, manifest, results)
-- ✅ I-1-002 CLI skeleton
-- ✅ I-2-001 Environment discovery
-- ⬜ I-3-001 Dependency management
-- ⬜ I-4-001 Installation engine
-- ⬜ I-5-001 Health / verification engine
-- ⬜ I-6-001 Bootstrap orchestrator
-- ⬜ I-7+ Provider, agent, failover
+- ✅ I-1 Foundation (packaging, config, state, results, logging)
+- ✅ I-2 Environment discovery
+- ✅ I-3 Dependency ordering (topo sort in planner)
+- ✅ I-4 Installation engine
+- ✅ I-5 Health / verification engine
+- ✅ I-6 Bootstrap orchestrator + plan CLI
+- ⬜ External tool adapters (REQUIRES VALIDATION)
+- ⬜ Provider/failover foundation expansion
+- ⬜ Agent registry runtime
+- 🚫 MCP / skills / plugins / frontend / Ollama / vLLM
 
 ## Evidence
 
-- 20 unit tests PASS
-- `froge status` PASS
-- `froge doctor` PASS
-
-**Never claim COMPLETE without evidence.**
+- pytest: 29 passed
+- froge status: PASS
+- froge plan: PASS (KEEP for system tools)
+- froge bootstrap --dry-run: PASS, idempotent

@@ -1,38 +1,47 @@
 # FROGE Agent — Current Repository State
 
-**Last audited:** 2026-08-31 (implementation in progress)
-**Branch:** main
+**Last updated:** 2026-08-31
 
-## Implemented (verified locally)
+## Implemented & Verified (local evidence)
 
-- `pyproject.toml` + package layout under `src/froge/`
-- `ComponentState` lifecycle model (aligned with health.md / bootstrap.md)
-- `OperationResult` + `Evidence` contracts
-- `FrogeSettings` (defaults, env override, validation)
-- `ToolManifest` schema + `ToolRegistry` with conceptual tools (REQUIRES VALIDATION for external agents)
-- Environment discovery (`discover_environment`, `discover_executable`)
-- CLI: `froge status | tools | doctor | version`
-- 20 unit tests — all passing in sandbox
+| Component | Status | Evidence |
+|-----------|--------|----------|
+| Packaging (`pyproject.toml`) | COMPLETE | present |
+| Config (`FrogeSettings`, env override) | COMPLETE | 3 tests |
+| State model (`ComponentState`, `desired_action`) | COMPLETE | 3 tests |
+| Results (`OperationResult`, `Evidence`) | COMPLETE | 2 tests |
+| Manifest + Registry | COMPLETE | 6 tests |
+| Environment discovery | COMPLETE | 3 tests + `froge doctor` |
+| Health verification ladder (L1–L6) | COMPLETE | 3 tests |
+| Installation engine (discover/install/update/repair/apply) | COMPLETE | used by bootstrap |
+| Desired-state planner | COMPLETE | 2 tests |
+| Bootstrap orchestrator | COMPLETE | 2 tests + CLI |
+| CLI: status, tools, doctor, plan, bootstrap | COMPLETE | 5 tests |
+| Unit tests | **29 passed** | `pytest tests/ -v` |
 
-## Evidence
+### Functional CLI evidence
 
 ```
-pytest tests/ -v  → 20 passed
-froge status       → Registry PASS, 10 tools
-froge doctor       → Discovery PASS
+froge status     → Registry PASS, 11 tools
+froge plan       → system tools KEEP; external DIAGNOSE (REQUIRES VALIDATION)
+froge bootstrap --dry-run → PASS; keep=4; install_attempted=0; requires_validation=7
 ```
 
-## Not yet implemented
+## Idempotency
 
-- Installation engine
-- Health / functional verification engine  
-- Bootstrap orchestrator
-- Provider abstraction / failover
+Second dry-run bootstrap produces identical KEEP set for system tools.
+
+## Not yet complete
+
+- Concrete install adapters for external tools (OpenCode, Hermes, etc.) — **REQUIRES VALIDATION** (no invented commands)
+- Real gateway/service health for tools that expose them
+- Provider abstraction / failover (foundation only)
 - Agent registry runtime
-- External tool adapters (all REQUIRES VALIDATION)
+- Windows-specific package managers (winget/choco) adapters
 
-## Deferred (ADR)
+## Explicitly deferred
 
-- MCP servers, Omni Router MCP, Mega MCP redesign
+- MCP servers / Omni Router MCP / Mega MCP redesign
 - Skills catalog / plugins
 - Frontend / design.md
+- Ollama / vLLM
