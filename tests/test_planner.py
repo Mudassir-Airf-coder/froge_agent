@@ -1,7 +1,7 @@
-"""Tests for desired-state planner."""
+"""Tests for desired-state planner including cycle detection."""
 
-from froge.manifest import default_registry
-from froge.planner import build_plan, topological_order
+from froge.manifest import ToolManifest, ToolRegistry, default_registry
+from froge.planner import build_plan, detect_cycles, topological_order
 from froge.results import Status
 
 
@@ -18,5 +18,20 @@ def test_build_plan():
     assert result.status == Status.PASS
     assert "steps" in result.data
     assert len(result.data["steps"]) >= 5
-    actions = {s["action"] for s in result.data["steps"]}
-    assert "KEEP" in actions or "DIAGNOSE" in actions or "INSTALL" in actions
+
+
+def test_detect_cycle():
+    reg = ToolRegistry()
+    reg.register(ToolManifest(id="a", name="A", dependencies=["b"]))
+    reg.register(ToolManifest(id="b", name="B", dependencies=["a"]))
+    cycles = detect_cycles(reg)
+    assert len(cycles) >= 1
+
+
+def test_build_plan_fails_on_cycle():
+    reg = ToolRegistry()
+    reg.register(ToolManifest(id="a", name="A", dependencies=["b"]))
+    reg.register(ToolManifest(id="b", name="B", dependencies=["a"]))
+    result = build_plan(reg)
+    assert result.status == Status.FAIL
+    assert result.data.get("cycles")

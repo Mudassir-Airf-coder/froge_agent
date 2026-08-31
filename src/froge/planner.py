@@ -1,4 +1,4 @@
-"""Desired-state planner — deterministic, inspectable plan generation."""
+"""Desired-state planner — deterministic plan generation + cycle detection."""
 
 from __future__ import annotations
 
@@ -27,8 +27,45 @@ class PlanStep:
         }
 
 
+def detect_cycles(registry: ToolRegistry, tool_ids: Optional[list[str]] = None) -> list[list[str]]:
+    """Return list of dependency cycles."""
+    tools = {t.id: t for t in registry.list(enabled_only=True)}
+    if tool_ids:
+        tools = {k: v for k, v in tools.items() if k in tool_ids}
+
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {tid: WHITE for tid in tools}
+    cycles: list[list[str]] = []
+    path: list[str] = []
+
+    def dfs(tid: str) -> None:
+        color[tid] = GRAY
+        path.append(tid)
+        t = tools.get(tid)
+        if t:
+            for dep in t.dependencies:
+                if dep not in tools:
+                    continue
+                if color[dep] == GRAY:
+                    idx = path.index(dep)
+                    cycles.append(path[idx:] + [dep])
+                elif color[dep] == WHITE:
+                    dfs(dep)
+        path.pop()
+        color[tid] = BLACK
+
+    for tid in tools:
+        if color[tid] == WHITE:
+            dfs(tid)
+    return cycles
+
+
 def topological_order(registry: ToolRegistry, tool_ids: Optional[list[str]] = None) -> list[str]:
-    """Simple dependency-aware ordering. Dependencies first."""
+    """Dependency-aware ordering. Raises ValueError on cycle."""
+    cycles = detect_cycles(registry, tool_ids)
+    if cycles:
+        raise ValueError(f"Dependency cycle(s) detected: {cycles}")
+
     tools = {t.id: t for t in registry.list(enabled_only=True)}
     if tool_ids:
         tools = {k: v for k, v in tools.items() if k in tool_ids}
@@ -58,8 +95,17 @@ def build_plan(
     settings: Optional[FrogeSettings] = None,
     tool_ids: Optional[list[str]] = None,
 ) -> OperationResult:
-    """Discover current state of all (or selected) tools and produce an action plan."""
     settings = settings or load_settings()
+    cycles = detect_cycles(registry, tool_ids)
+    if cycles:
+        return OperationResult(
+            operation="planner.build",
+            status=Status.FAIL,
+            message=f"Dependency cycle(s) detected: {cycles}",
+            errors=[f"cycle: {' -> '.join(c)}" for c in cycles],
+            data={"cycles": cycles},
+        )
+
     order = topological_order(registry, tool_ids)
     steps: list[dict] = []
     results_evidence = []
@@ -76,7 +122,7 @@ def build_plan(
         results_evidence.extend(disc.evidence)
 
     mutating = [s for s in steps if s["action"] not in ("KEEP", "DIAGNOSE")]
-    result = OperationResult(
+    return OperationResult(
         operation="planner.build",
         status=Status.PASS,
         message=f"Plan: {len(steps)} tools, {len(mutating)} mutating actions, dry_run={settings.dry_run}",
@@ -85,7 +131,7 @@ def build_plan(
             "order": order,
             "mutating_count": len(mutating),
             "dry_run": settings.dry_run,
+            "cycles": [],
         },
         evidence=results_evidence,
     )
-    return result
