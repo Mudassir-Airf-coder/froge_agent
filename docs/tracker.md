@@ -6,28 +6,32 @@
 
 | Item | Value |
 |------|-------|
-| Status | Core bootstrap system COMPLETE and verified |
-| Tests | 29 passed |
-| CLI | status, tools, doctor, plan, bootstrap |
-| Idempotency | verified (dry-run x2) |
+| Status | Bootstrap engine + persistence + adapters COMPLETE |
+| Tests | **44 passed** |
+| CLI | status, tools, doctor, plan, bootstrap, state, verify (+ --json) |
+| Idempotency | verified |
+| Persistence | `.froge/state.json` atomic writes |
 
 ## Board
 
-- ✅ Foundation (packaging, config, state, results, logging)
-- ✅ Environment discovery
-- ✅ Manifest + registry
-- ✅ Installation engine
-- ✅ Health verification ladder
-- ✅ Desired-state planner + dependency order
-- ✅ Bootstrap orchestrator
-- ✅ CLI plan + bootstrap
+- 🟢 Foundation
+- 🟢 Discovery
+- 🟢 Manifest + registry
+- 🟢 Installation engine
+- 🟢 Health ladder
+- 🟢 Planner + cycle detection
+- 🟢 Bootstrap orchestrator
+- 🟢 Persistent state store
+- 🟢 Adapter abstraction
+- 🟢 CLI state / verify / --json
+- 🟢 E2E fake-tool tests
 - ⬜ Concrete external tool adapters (REQUIRES VALIDATION)
-- ⬜ State persistence store
+- ⬜ Windows winget/choco adapters (when verified)
 - ⬜ Provider/failover foundation expansion
 - 🚫 MCP / skills / plugins / frontend / Ollama / vLLM
 
 ## Evidence
 
-- pytest: 29 passed
-- froge status / plan / bootstrap --dry-run: PASS
+- pytest: 44 passed
+- froge status/plan/bootstrap/state/verify: PASS
 - No invented external install commands
