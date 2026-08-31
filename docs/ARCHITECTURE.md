@@ -1,8 +1,9 @@
 # FROGE Architecture
 
-## System Model
+**Last updated:** 2026-08-31  
+**Status:** Target architecture documented; implementation is documentation-only at this stage.
 
-FROGE is a control-plane architecture for coordinating AI models, providers, MCP servers, tools, skills, memory, sessions, and verification.
+## System Model (Target)
 
 ```text
 User / Agent Request
@@ -20,7 +21,7 @@ User / Agent Request
           ▼
 ┌──────────────────────────┐
 │ Capability / MCP Control  │
-│ Plane                     │
+│ Plane (future)            │
 └────────────┬─────────────┘
              │
    ┌─────────┼──────────┐
@@ -41,33 +42,36 @@ Models     Runtimes   Agents
        Memory / Evidence
 ```
 
-## Core Layers
+## Core Layers (Target)
 
-### 1. Orchestration
-Owns intent normalization, planning, routing, execution coordination, and result handling.
+1. **Orchestration** — intent, planning, routing, execution coordination, result handling (see ORCHESTRATOR.md).
+2. **Provider and Model Layer** — abstraction, health, failover (see providers.md).
+3. **MCP Control Plane** — discoverable, permissioned, observable tools (implementation deferred — ADR-004).
+4. **Skill Layer** — reusable operational knowledge (see skills.md).
+5. **Context and Memory** — selective session + durable operational knowledge (future).
+6. **Recovery** — classified failures + verified recovery (see recovery.md).
+7. **Verification** — evidence-based testing (see testing.md).
 
-### 2. Provider and Model Layer
-Abstracts provider-specific APIs and model identifiers. Provider health and model health are tracked independently.
+## Bootstrap Layer (Prerequisite)
 
-### 3. MCP Control Plane
-Provides a consistent interface for discovering, invoking, monitoring, and governing external/local tools.
-
-### 4. Skill Layer
-Contains reusable workflows with explicit inputs, outputs, permissions, and verification requirements.
-
-### 5. Context and Memory
-Maintains active session state and durable operational knowledge. Memory should be selective and evidence-oriented.
-
-### 6. Recovery
-Classifies failures, retries boundedly, applies cooldowns, selects verified fallbacks, and records successful recovery paths.
-
-### 7. Verification
-Tests capabilities before trusting them and validates important results after execution.
+Machine preparation via desired-state detection and idempotent install/update/repair/verify (see bootstrap.md).
 
 ## Design Boundary
 
-The orchestrator coordinates these layers; it should not become a monolithic implementation of every provider, tool, or skill.
+The orchestrator coordinates layers; it must not become a monolithic implementation of every provider, tool, or skill.
 
 ## Local System Integration
 
-FROGE is intended to control approved software and runtimes installed on the user's computer through the MCP/control-plane layer. Local configuration may describe executable paths and capabilities, but secrets must remain outside Git.
+FROGE is intended to control approved software and runtimes through the control-plane layer. Secrets remain outside Git.
+
+## Current Reality vs Target
+
+See `docs/CURRENT-STATE.md` and `docs/flow.md`. Almost all of the above is still target architecture. Only documentation and a package stub exist.
+
+## Related Living Documents
+
+- docs/flow.md
+- docs/task.md
+- docs/tracker.md
+- docs/GAPS.md
+- docs/adr/

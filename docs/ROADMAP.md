@@ -1,13 +1,22 @@
 # FROGE Roadmap
 
-## Stage 0 — Foundation
-- [x] Repository created
-- [x] Vision documented
-- [x] Architecture documented
-- [x] Orchestrator contract documented
-- [x] Agent operating contract documented
+**Last updated:** 2026-08-31
 
-## Stage 1 — Core Control Plane
+## Stage 0 — Foundation (Documentation)
+
+- [x] Repository created
+- [x] Initial vision & architecture documents
+- [x] Orchestrator contract
+- [x] Agent operating contract
+- [x] Full repository audit (CURRENT-STATE.md, GAPS.md)
+- [x] Living documents introduced (flow.md, task.md, tracker.md)
+- [x] Core architecture contracts drafted (bootstrap, tools, agents, health, recovery, security, testing, providers, skills, plugins)
+- [x] Foundational ADRs (001–005)
+- [ ] README fully aligned and remaining Phase-1 polish
+- [ ] Documentation foundation declared complete (tracker green for Phase 0)
+
+## Stage 1 — Core Control Plane (Future Implementation)
+
 - [ ] Typed configuration
 - [ ] Capability registry
 - [ ] Provider registry
@@ -16,48 +25,45 @@
 - [ ] Session manager
 - [ ] Policy engine
 
-## Stage 2 — MCP Control Plane
+## Stage 2 — MCP Control Plane (Deferred)
+
 - [ ] MCP server architecture
 - [ ] MCP client/transport layer
-- [ ] Tool discovery
-- [ ] Tool health checks
-- [ ] Permission boundaries
-- [ ] Lifecycle management
+- [ ] Tool discovery, health, permissions, lifecycle
+
+**Note:** Explicitly out of scope until ADR-004 is revisited.
 
 ## Stage 3 — Orchestration
-- [ ] Intent resolver
-- [ ] Planner
-- [ ] Router
-- [ ] Execution engine
-- [ ] Result validator
+
+- [ ] Intent resolver, planner, router, execution engine, result validator
 
 ## Stage 4 — Context, Memory & Knowledge
+
 - [ ] Active session context
 - [ ] Persistent operational memory
-- [ ] Retrieval layer
-- [ ] Knowledge graph integration
-- [ ] Evidence tracking
+- [ ] Retrieval & evidence tracking
+- [ ] Knowledge-graph integration (future)
 
 ## Stage 5 — Self-Healing
-- [ ] Error taxonomy
+
+- [ ] Error taxonomy (see recovery.md)
 - [ ] Provider/model health scoring
-- [ ] Verified fallback selection
-- [ ] Retry and cooldown policy
-- [ ] Same-session recovery
+- [ ] Verified fallback, retry, cooldown
+- [ ] Same-session recovery (mechanism TBD)
 - [ ] Recovery-memory learning
 
 ## Stage 6 — Verification
-- [ ] Unit tests
-- [ ] Contract tests
-- [ ] Integration tests
-- [ ] Provider/model health tests
-- [ ] MCP E2E tests
-- [ ] Session continuity tests
-- [ ] Full regression suite
+
+- [ ] Unit, contract, integration, E2E, failure-injection, regression suites
 
 ## Stage 7 — Operational Release
-- [ ] Bootstrap/install flow
+
+- [ ] Bootstrap/install flow (implementation of bootstrap.md)
 - [ ] Diagnostics CLI
 - [ ] Observability
 - [ ] Secure local configuration
 - [ ] Release documentation
+
+## Source of Truth for Day-to-Day Progress
+
+Use `docs/tracker.md` and `docs/task.md`. This roadmap is the high-level view.

@@ -1,128 +1,112 @@
 # FROGE Agent
 
-**FROGE** is the working name for a modular, autonomous AI agent system designed to orchestrate models, tools, skills, MCP servers, memory, and local computer capabilities through one controlled architecture.
+**FROGE** is a modular AI Development Control Plane intended to orchestrate models, tools, skills, MCP servers, memory, and local computer capabilities through one controlled, verifiable architecture.
 
-> **Status:** Architecture and documentation foundation — build phase starting.
+> **Current Status (2026-08-31):** Documentation and architecture foundation.  
+> Implementation has not started beyond a package stub.  
+> The repository is the persistent source of truth.
 
-## Vision
+## Quick Orientation for Any New Agent
 
-FROGE is intended to become a single control layer for an AI coding and automation workflow. Instead of treating every model, provider, CLI, MCP server, skill, and local tool as an isolated system, FROGE provides a common orchestration layer that can discover capabilities, select the right tool/model, preserve context, execute work, verify results, and recover from failures.
+1. Read [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md) — what actually exists.
+2. Read [`docs/tracker.md`](docs/tracker.md) — what is done / next / blocked.
+3. Read [`docs/task.md`](docs/task.md) — the work breakdown.
+4. Read [`docs/flow.md`](docs/flow.md) — current vs target lifecycle.
+5. Read [`docs/GAPS.md`](docs/GAPS.md) — known gaps.
+6. Read the contracts below.
+7. Follow the operating rules in [`AGENTS.md`](AGENTS.md).
 
-The project is being built in stages: **define → document → architect → implement → integrate → verify → operate**.
+## Vision (Summary)
 
-## Core Goals
+FROGE aims to become a single control layer that can discover, install, configure, verify, operate, monitor, and recover an ecosystem of AI development tools and agents on a developer machine (Windows-first).
 
-- **Orchestration:** coordinate models, agents, tools, skills, and workflows.
-- **Provider abstraction:** keep provider/model selection separate from application logic.
-- **MCP control plane:** expose and control approved tools through a consistent MCP layer.
-- **Context and memory:** preserve useful operational knowledge without blindly retaining noise.
-- **Self-healing:** detect provider/model failures and recover through verified fallback paths.
-- **Skills:** turn repeatable workflows into reusable, testable capabilities.
-- **Verification:** important actions should have observable evidence and tests.
-- **Local control:** integrate with installed tools and runtimes without hard-coding secrets.
-- **Extensibility:** new providers, models, tools, MCP servers, and skills should be pluggable.
+It is **not** merely an installer, a chatbot, a single coding agent, or a single model router.
 
-## High-Level Architecture
+## Core Design Principles
 
-```text
-                         ┌──────────────────────┐
-                         │      FROGE Agent     │
-                         │   Master Controller  │
-                         └──────────┬───────────┘
-                                    │
-             ┌──────────────────────┼──────────────────────┐
-             │                      │                      │
-       ┌─────▼─────┐          ┌─────▼─────┐          ┌─────▼─────┐
-       │ Orchestrator│          │ Context & │          │  Policy & │
-       │ / Planner  │          │  Memory   │          │  Safety   │
-       └─────┬─────┘          └─────┬─────┘          └─────┬─────┘
-             └──────────────────────┼──────────────────────┘
-                                    │
-                         ┌──────────▼──────────┐
-                         │    MCP Control Plane │
-                         └──────────┬──────────┘
-                                    │
-        ┌───────────────────────────┼───────────────────────────┐
-        │                           │                           │
-   ┌────▼────┐                ┌─────▼─────┐               ┌─────▼─────┐
-   │ Models & │                │   Tools   │               │  Skills   │
-   │Providers │                │ / Runtime │               │ / Agents  │
-   └─────────┘                └───────────┘               └───────────┘
-                                    │
-                         ┌──────────▼──────────┐
-                         │ Verification / E2E   │
-                         │ Evidence / Recovery │
-                         └──────────────────────┘
-```
+1. Documentation is the source of truth.
+2. Architecture before implementation.
+3. Verification before mutation.
+4. Never assume installation success.
+5. One clear control plane.
+6. Provider/model selection is a replaceable layer.
+7. Failures are classified events; recovery is verified before trusted.
+8. Memory stores useful knowledge and evidence, not noise.
+9. No secrets in Git.
+10. Changes must remain understandable and reversible.
+11. Idempotent desired-state bootstrap.
+12. Explicit tool and agent role contracts (no silent overlap).
 
-## Repository Structure
+## Current Repository Structure (Actual)
 
 ```text
 froge_agent/
 ├── README.md
-├── AGENTS.md
-├── ORCHESTRATOR.md
+├── AGENTS.md                 # Operating contract for agents working on FROGE
+├── ORCHESTRATOR.md           # Orchestrator responsibilities & pipeline
 ├── docs/
-│   ├── VISION.md
+│   ├── CURRENT-STATE.md      # What actually exists right now
+│   ├── GAPS.md               # Gap analysis
+│   ├── flow.md               # Current vs target execution flow
+│   ├── task.md               # Work breakdown with IDs & acceptance criteria
+│   ├── tracker.md            # Live progress board
 │   ├── ARCHITECTURE.md
+│   ├── MCP_CONTROL_PLANE.md  # Intent only — implementation deferred
 │   ├── ROADMAP.md
-│   ├── MCP_CONTROL_PLANE.md
-│   └── VERIFICATION.md
-├── src/                  # FROGE implementation
-├── mcp/                  # FROGE MCP control plane
-├── skills/               # Reusable FROGE skills
-├── providers/            # Provider/model adapters
-├── tests/                # Unit/integration/E2E tests
-├── scripts/              # Bootstrap, diagnostics, verification
-└── config/               # Sanitized, non-secret configuration
+│   ├── bootstrap.md
+│   ├── tools.md
+│   ├── agents.md
+│   ├── providers.md
+│   ├── skills.md
+│   ├── plugins.md
+│   ├── health.md
+│   ├── recovery.md
+│   ├── security.md
+│   ├── testing.md
+│   └── adr/                  # Architecture Decision Records
+└── src/froge/
+    └── __init__.py           # Package stub (__version__ = "0.1.0")
 ```
 
-## Design Principles
+Folders such as `mcp/`, `skills/`, `providers/`, `tests/`, `scripts/`, `config/` are **planned** and do not exist yet.
 
-1. Architecture before accidental complexity.
-2. One source of truth for project decisions.
-3. Provider/model selection is a replaceable layer.
-4. No secrets in Git; use environment variables or secure local credential storage.
-5. Every integration gets a health check.
-6. Every critical workflow gets an end-to-end test.
-7. Failures become classified events, not mysterious exceptions.
-8. Recovery must be verified before a fallback is trusted.
-9. Memory stores useful knowledge and evidence, not uncontrolled noise.
-10. Changes should remain understandable and reversible.
+## Key Contracts
 
-## Build Phases
+| Document | Purpose |
+|----------|---------|
+| [AGENTS.md](AGENTS.md) | How agents must operate on this repository |
+| [ORCHESTRATOR.md](ORCHESTRATOR.md) | Central decision/execution layer contract |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | System layers |
+| [docs/MCP_CONTROL_PLANE.md](docs/MCP_CONTROL_PLANE.md) | Future MCP boundary (implementation deferred — ADR-004) |
+| [docs/bootstrap.md](docs/bootstrap.md) | Desired-state machine |
+| [docs/health.md](docs/health.md) | Health ladder & vocabulary |
+| [docs/recovery.md](docs/recovery.md) | Failure taxonomy & recovery pipeline |
+| [docs/security.md](docs/security.md) | Security principles |
+| [docs/testing.md](docs/testing.md) | Evidence standard |
 
-### Phase 0 — Foundation
-Repository structure, vision, architecture, operating contract, and documentation standards.
+## Explicitly Out of Scope (Current Phase)
 
-### Phase 1 — Control Plane
-Configuration model, tool registry, provider/model registry, health checks, and execution contracts.
+- MCP server/client implementation
+- Omni Router MCP
+- Mega MCP construction or redesign
+- Frontend / UI / design.md
+- Any production runtime code beyond the documentation foundation
 
-### Phase 2 — MCP Layer
-MCP server/client architecture, tool discovery, lifecycle/health, and permission boundaries.
+See ADR-004 and ADR-005.
 
-### Phase 3 — Orchestration
-Intent intake, planning, routing, execution, and result validation.
+## Build Phases (High Level)
 
-### Phase 4 — Context & Memory
-Session state, persistent operational memory, retrieval, and knowledge-graph integration where appropriate.
+See [docs/ROADMAP.md](docs/ROADMAP.md) and the detailed task list in [docs/task.md](docs/task.md).
 
-### Phase 5 — Recovery
-Error classification, provider/model fallback, retry/cooldown policy, and recovery memory.
-
-### Phase 6 — Verification
-Unit, integration, contract, E2E, and regression testing.
-
-### Phase 7 — Operational Build
-Local installation/bootstrap, diagnostics, observability, documentation completion, and stable release workflow.
-
-## Current State
-
-The repository is now the documentation and architecture foundation for FROGE. Implementation should proceed against documented contracts and milestones rather than growing through disconnected experiments.
+- **Phase 0** — Repository audit & documentation foundation (in progress)
+- **Phase 1** — Core architecture contracts (documentation)
+- Later phases — Implementation against the documented contracts
 
 ## Security
 
-Never commit API keys, access tokens, passwords, session cookies, private keys, or other credentials. Use environment variables, local credential stores, and sanitized configuration examples.
+Never commit API keys, access tokens, passwords, private keys, or other credentials.  
+Use environment variables or secure local credential storage.  
+See [docs/security.md](docs/security.md).
 
 ## License
 
