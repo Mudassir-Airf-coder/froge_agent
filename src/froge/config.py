@@ -1,30 +1,24 @@
 """Central configuration system.
 
-Defaults + schema + environment overrides + validation.
+Defaults + environment overrides + validation.
+Uses plain pydantic BaseModel (no pydantic-settings dependency).
 """
 
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import Any, Optional
 
-from pydantic import Field
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel, Field
 
 
-class FrogeSettings(BaseSettings):
+class FrogeSettings(BaseModel):
     """FROGE system configuration.
 
     Environment variables are prefixed with FROGE_.
     Example: FROGE_LOG_LEVEL=DEBUG
     """
-
-    model_config = SettingsConfigDict(
-        env_prefix="FROGE_",
-        env_file=".env",
-        env_file_encoding="utf-8",
-        extra="ignore",
-    )
 
     log_level: str = Field(default="INFO", description="Logging level")
     data_dir: Path = Field(
@@ -48,6 +42,37 @@ class FrogeSettings(BaseSettings):
         return self.data_dir
 
 
+def _env_bool(key: str, default: bool) -> bool:
+    val = os.environ.get(key)
+    if val is None:
+        return default
+    return val.strip().lower() in ("1", "true", "yes", "on")
+
+
+def _env_int(key: str, default: int) -> int:
+    val = os.environ.get(key)
+    if val is None:
+        return default
+    try:
+        return int(val)
+    except ValueError:
+        return default
+
+
 def load_settings(**overrides: Any) -> FrogeSettings:
-    """Load settings with optional programmatic overrides."""
-    return FrogeSettings(**overrides)
+    """Load settings from environment (FROGE_*) with optional programmatic overrides."""
+    data: dict[str, Any] = {
+        "log_level": os.environ.get("FROGE_LOG_LEVEL", "INFO"),
+        "dry_run": _env_bool("FROGE_DRY_RUN", False),
+        "max_retries": _env_int("FROGE_MAX_RETRIES", 3),
+        "command_timeout_seconds": _env_int("FROGE_COMMAND_TIMEOUT_SECONDS", 120),
+        "allow_destructive": _env_bool("FROGE_ALLOW_DESTRUCTIVE", False),
+    }
+    data_dir = os.environ.get("FROGE_DATA_DIR")
+    if data_dir:
+        data["data_dir"] = Path(data_dir)
+    manifest = os.environ.get("FROGE_MANIFEST_PATH")
+    if manifest:
+        data["manifest_path"] = Path(manifest)
+    data.update(overrides)
+    return FrogeSettings(**data)
