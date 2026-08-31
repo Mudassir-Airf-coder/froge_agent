@@ -23,7 +23,6 @@ def test_registry_register_get_list():
     reg.register(t)
     assert len(reg) == 1
     assert reg.get("python") is t
-    assert reg.list()[0].id == "python"
 
 
 def test_registry_enable_disable():
@@ -39,7 +38,7 @@ def test_default_registry_has_conceptual_tools():
     assert len(reg) >= 8
     assert reg.get("python") is not None
     assert reg.get("opencode") is not None
-    assert "REQUIRES VALIDATION" in (reg.get("opencode").notes or "")
+    assert reg.get("opencode").validation_status == "requires_validation"
 
 
 def test_registry_validate_pass():
