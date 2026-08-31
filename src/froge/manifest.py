@@ -192,7 +192,7 @@ def default_registry() -> ToolRegistry:
             id="opencode", name="OpenCode",
             role="Primary Software Engineering / Coding Agent",
             installation_method="unknown", validation_status="requires_validation",
-            notes="REQUIRES VALIDATION — no install command assumed",
+            notes="REQUIRES VALIDATION - no install command assumed",
         ),
         ToolManifest(
             id="hermes", name="Hermes",
@@ -222,13 +222,31 @@ def default_registry() -> ToolRegistry:
             id="freebuff", name="FreeBuff / CodeBuff",
             role="Lightweight coding environment workflow",
             installation_method="unknown", validation_status="requires_validation",
-            notes="REQUIRES VALIDATION — inspect actual project before integration",
+            notes="REQUIRES VALIDATION - inspect actual project before integration",
         ),
         ToolManifest(
             id="omni-router", name="Omni Router",
             role="Provider / Model Routing Layer",
             installation_method="unknown", validation_status="requires_validation",
-            notes="REQUIRES VALIDATION — do not invent MCP",
+            notes="REQUIRES VALIDATION - do not invent MCP",
+        ),
+        ToolManifest(
+            id="nimble-clock", name="Nimble Clock",
+            role="Orchestration timing / scheduling (project intent)",
+            installation_method="unknown", validation_status="requires_validation",
+            notes="REQUIRES VALIDATION",
+        ),
+        ToolManifest(
+            id="ohsc", name="OHSC",
+            role="Knowledge / system integration",
+            installation_method="unknown", validation_status="requires_validation",
+            notes="REQUIRES VALIDATION - deferred runtime integration",
+        ),
+        ToolManifest(
+            id="graphify", name="Graphify",
+            role="Graph knowledge integration",
+            installation_method="unknown", validation_status="requires_validation",
+            notes="REQUIRES VALIDATION",
         ),
     ]
     for t in tools:
