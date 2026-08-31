@@ -1,33 +1,29 @@
 # FROGE Skills
 
-**Status:** DOCUMENTED ONLY  
-**Last updated:** 2026-08-31
+**Status:** ONE ACTIVE OPERATIONAL SKILL  
+**Last updated:** 2026-09-01
 
 ## Definition
 
 **Skill** = reusable operational knowledge / instructions that an agent or system can follow.
+Skills are structured procedures, not a plugin catalog.
 
-Skills are not executable plugins. They are structured, versionable procedures.
+## Active skills
+
+| Skill ID | Path | Executor |
+|----------|------|----------|
+| `froge-universal-install` | `skills/froge-universal-install.skill.md` | `froge install-skill` / `froge.skill_install.run_install_skill` |
 
 ## Distinction from Plugins
 
-See `docs/plugins.md`. The distinction must remain explicit.
+See `docs/plugins.md`. Skills ≠ plugins. The plugin ecosystem remains deferred.
 
-## Target Lifecycle Concerns
+## Catalog
 
-- Structure & metadata
-- Ownership
-- Discovery & activation
-- Installation / versioning
-- Dependencies
-- Testing
-- Association with agents
-- Storage location
+A large skills catalog is **not** implemented. Only the universal install skill is in scope.
 
-## Current Reality
+## Related
 
-No skills directory or skill files exist yet. The concept is referenced in architecture documents only.
-
-## Future Note
-
-After significant achievements or resolved problems, the project rule is to produce both an Obsidian-style knowledge record and a corresponding `.skill.md` where the lesson is durable and reusable. That process is not yet implemented.
+- docs/bootstrap.md
+- docs/tools.md
+- docs/security.md

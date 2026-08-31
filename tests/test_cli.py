@@ -34,3 +34,7 @@ def test_state():
 def test_verify():
     code = main(["verify"])
     assert code in (0, 1)
+
+
+def test_install_skill_dry_run():
+    assert main(["install-skill", "--dry-run"]) == 0

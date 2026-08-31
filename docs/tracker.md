@@ -6,26 +6,24 @@
 
 | Item | Value |
 |------|-------|
-| Status | **BOOTSTRAP ENGINE COMPLETE** |
-| Tests | **58 passed** |
-| Providers | Foundation only (empty registry) |
-| External tools | REQUIRES_VALIDATION |
+| Status | Bootstrap COMPLETE + **Universal Install Skill ACTIVE** |
+| Tests | **67 passed** |
+| Skill | `skills/froge-universal-install.skill.md` |
+| CLI | + `froge install-skill` |
 
 ## Board
 
-- 🟢 Foundation / discovery / manifest / installer / health / planner / bootstrap
-- 🟢 Persistent state + audit
-- 🟢 Adapter abstraction
-- 🟢 Error classification + safe exec
-- 🟢 Provider foundation (interfaces only)
-- 🟢 Repair / failure path tests
-- ⬜ Concrete external tool adapters (needs verified research)
-- ⬜ Windows winget/choco adapters (when verified)
-- ⬜ Concrete provider implementations (when verified)
-- 🚫 MCP / skills / plugins / frontend / Ollama / vLLM / OHSC
+- 🟢 Bootstrap control plane
+- 🟢 Universal Tool Installation & Verification Skill
+- 🟢 Skill runner + report format
+- 🟢 Secret redaction helpers
+- 🟢 Expanded inventory (nimble-clock, ohsc, graphify as REQUIRES_VALIDATION)
+- ⬜ Concrete external tool adapters (verified research required)
+- ⬜ Windows winget IDs (verified research required)
+- 🚫 MCP / skills catalog / plugins / frontend / Ollama / vLLM
 
 ## Evidence
 
-- pytest: 58 passed
+- pytest: 67 passed
+- froge install-skill --dry-run → PARTIAL, KEEP=4, REQUIRES_VALIDATION=10
 - No invented external install commands
-- No deferred scope implemented
