@@ -17,32 +17,32 @@
 | ID | Title | Description | Dependencies | Status | Acceptance Criteria | Evidence Required |
 |----|-------|-------------|--------------|--------|---------------------|-------------------|
 | T-0-001 | Complete repository audit | Inspect every file, classify state, produce CURRENT-STATE.md and GAPS.md | None | ✅ COMPLETED | All existing files read; classification accurate; gaps recorded | CURRENT-STATE.md, GAPS.md present |
-| T-0-002 | Establish living documentation set | Create flow.md, task.md, tracker.md and core architecture docs | T-0-001 | 🟡 IN PROGRESS | Documents exist, consistent, resume-capable | Files in docs/ + git commit |
-| T-0-003 | Record foundational ADRs | ADR-001 to ADR-005 | T-0-001 | 🟡 PENDING | ADRs accepted and committed | docs/adr/ |
-| T-0-004 | Update README to reflect reality | Remove aspirational folder claims; point to living docs | T-0-002 | ⬜ NOT STARTED | README matches actual structure + points to docs | README diff |
+| T-0-002 | Establish living documentation set | Create flow.md, task.md, tracker.md and core architecture docs | T-0-001 | ✅ COMPLETED | Documents exist, consistent, resume-capable | Files in docs/ + git commits |
+| T-0-003 | Record foundational ADRs | ADR-001 to ADR-005 | T-0-001 | ✅ COMPLETED | ADRs accepted and committed | docs/adr/ |
+| T-0-004 | Update README to reflect reality | Remove aspirational folder claims; point to living docs | T-0-002 | ✅ COMPLETED | README matches actual structure + points to docs | README on main |
 
 ## PHASE 1 — Core Architecture Contracts (Documentation Only)
 
 | ID | Title | Description | Dependencies | Status | Acceptance Criteria | Evidence Required |
 |----|-------|-------------|--------------|--------|---------------------|-------------------|
-| T-1-001 | Bootstrap specification | Full desired-state machine, detection, install/update/repair/verify | T-0-002 | ⬜ NOT STARTED | bootstrap.md complete with idempotency rules | docs/bootstrap.md |
-| T-1-002 | Tool role definitions | Document each tool with Role / Responsibilities / Non-responsibilities / Health / etc. Mark unverified | T-0-002 | ⬜ NOT STARTED | tools.md exists; every tool has REQUIRES VALIDATION where appropriate | docs/tools.md |
-| T-1-003 | Agent role contracts | Explicit contracts for runtime agents FROGE will orchestrate | T-1-002 | ⬜ NOT STARTED | agents.md with non-overlapping roles | docs/agents.md |
-| T-1-004 | Provider & model architecture | Discovery, health, failover, cooldown, session continuity (mechanism TBD) | T-0-002 | ⬜ NOT STARTED | providers.md + models.md or combined | docs/providers.md |
-| T-1-005 | Skills vs Plugins distinction | Clear definitions + lifecycle | T-0-002 | ⬜ NOT STARTED | skills.md + plugins.md | docs/skills.md, docs/plugins.md |
-| T-1-006 | Health model | Formal vocabulary + ladder | T-0-002 | ⬜ NOT STARTED | health.md | docs/health.md |
-| T-1-007 | Recovery model | Failure taxonomy + detect-classify-diagnose-repair-verify-record | T-0-002 | ⬜ NOT STARTED | recovery.md | docs/recovery.md |
-| T-1-008 | Security principles | Secrets, least privilege, boundaries, audit, redaction | T-0-002 | ⬜ NOT STARTED | security.md | docs/security.md |
-| T-1-009 | Testing philosophy | Layers, acceptance, evidence rule | T-0-002 | ⬜ NOT STARTED | testing.md | docs/testing.md |
+| T-1-001 | Bootstrap specification | Full desired-state machine, detection, install/update/repair/verify | T-0-002 | ✅ COMPLETED (first draft) | bootstrap.md complete with idempotency rules | docs/bootstrap.md |
+| T-1-002 | Tool role definitions | Document each tool with Role / Responsibilities / Non-responsibilities / Health / etc. Mark unverified | T-0-002 | ✅ COMPLETED (first draft) | tools.md exists; every tool has REQUIRES VALIDATION where appropriate | docs/tools.md |
+| T-1-003 | Agent role contracts | Explicit contracts for runtime agents FROGE will orchestrate | T-1-002 | ✅ COMPLETED (first draft) | agents.md with non-overlapping role hypotheses | docs/agents.md |
+| T-1-004 | Provider & model architecture | Discovery, health, failover, cooldown, session continuity (mechanism TBD) | T-0-002 | ✅ COMPLETED (first draft) | providers.md | docs/providers.md |
+| T-1-005 | Skills vs Plugins distinction | Clear definitions + lifecycle | T-0-002 | ✅ COMPLETED (first draft) | skills.md + plugins.md | docs/skills.md, docs/plugins.md |
+| T-1-006 | Health model | Formal vocabulary + ladder | T-0-002 | ✅ COMPLETED (first draft) | health.md | docs/health.md |
+| T-1-007 | Recovery model | Failure taxonomy + detect-classify-diagnose-repair-verify-record | T-0-002 | ✅ COMPLETED (first draft) | recovery.md | docs/recovery.md |
+| T-1-008 | Security principles | Secrets, least privilege, boundaries, audit, redaction | T-0-002 | ✅ COMPLETED (first draft) | security.md | docs/security.md |
+| T-1-009 | Testing philosophy | Layers, acceptance, evidence rule | T-0-002 | ✅ COMPLETED (first draft) | testing.md | docs/testing.md |
 
 ## PHASE 2 — Deferred / Future (Explicitly Out of Scope Now)
 
 | ID | Title | Status | Notes |
 |----|-------|--------|-------|
-| T-MCP-001 | MCP Control Plane implementation | 🚫 OUT OF SCOPE | Document boundary only |
+| T-MCP-001 | MCP Control Plane implementation | 🚫 OUT OF SCOPE | Document boundary only (ADR-004) |
 | T-OMNI-001 | Omni Router MCP | 🚫 OUT OF SCOPE | Document future integration only |
 | T-MEGA-001 | Mega MCP construction/redesign | 🚫 OUT OF SCOPE | Assume exists; interface TBD |
-| T-UI-001 | Frontend / design.md | 🚫 OUT OF SCOPE | Explicitly deferred |
+| T-UI-001 | Frontend / design.md | 🚫 OUT OF SCOPE | Explicitly deferred (ADR-005) |
 
 ## PHASE 3+ — Implementation (After Documentation Foundation Accepted)
 
