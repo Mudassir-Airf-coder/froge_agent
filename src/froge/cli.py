@@ -16,6 +16,7 @@ from froge.manifest import default_registry
 from froge.persistence import load_state
 from froge.planner import build_plan
 from froge.results import Status
+from froge.skill_install import format_report, run_install_skill
 
 
 def _print_json(obj) -> None:
@@ -61,7 +62,7 @@ def cmd_status(args: argparse.Namespace) -> int:
     print(f"State file   : {store.path}")
     print(f"Dry run      : {settings.dry_run}")
     print(f"Tools registered: {len(reg)}")
-    print(f"Registry     : {result.status.value} — {result.message}")
+    print(f"Registry     : {result.status.value} - {result.message}")
     print(f"Persisted components: {store.summary()['component_count']}")
     print("\nRegistered tools:")
     for t in reg.list():
@@ -85,7 +86,7 @@ def cmd_doctor(args: argparse.Namespace) -> int:
     if getattr(args, "json", False):
         _print_json(result)
         return 0 if result.status != Status.ERROR else 1
-    print(f"FROGE doctor — {result.status.value}")
+    print(f"FROGE doctor - {result.status.value}")
     print(result.message)
     print()
     for item in result.data.get("items", []):
@@ -104,11 +105,11 @@ def cmd_plan(args: argparse.Namespace) -> int:
     if getattr(args, "json", False):
         _print_json(result)
         return 0 if result.is_success() else 1
-    print(f"FROGE plan — {result.status.value}")
+    print(f"FROGE plan - {result.status.value}")
     print(result.message)
     print()
     for step in result.data.get("steps", []):
-        print(f"  {step['tool_id']:16} state={step['current_state']:12} → action={step['action']}")
+        print(f"  {step['tool_id']:16} state={step['current_state']:12} -> action={step['action']}")
     return 0 if result.is_success() else 1
 
 
@@ -172,7 +173,7 @@ def cmd_verify(args: argparse.Namespace) -> int:
         r = verify_tool(t)
         results.append(r)
         if not getattr(args, "json", False):
-            print(f"{t.id:16} {r.status.value:6} state={r.state} — {r.message}")
+            print(f"{t.id:16} {r.status.value:6} state={r.state} - {r.message}")
             for k, v in (r.data.get("levels") or {}).items():
                 print(f"    {k}: {v}")
     if getattr(args, "json", False):
@@ -180,9 +181,24 @@ def cmd_verify(args: argparse.Namespace) -> int:
     return 0 if all(r.is_success() or r.status == Status.SKIP for r in results) else 1
 
 
+def cmd_install_skill(args: argparse.Namespace) -> int:
+    """Run the universal install skill."""
+    dry = not getattr(args, "apply", False)
+    settings = load_settings(dry_run=dry)
+    setup_logging(settings.log_level)
+    result = run_install_skill(
+        dry_run=dry, settings=settings, verify=not getattr(args, "no_verify", False)
+    )
+    if getattr(args, "json", False):
+        _print_json(result)
+    else:
+        print(format_report(result))
+    return 0 if result.is_success() else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
-        prog="froge", description="FROGE Agent — AI Development Control Plane"
+        prog="froge", description="FROGE Agent - AI Development Control Plane"
     )
     parser.add_argument("--version", action="store_true")
     sub = parser.add_subparsers(dest="command")
@@ -195,13 +211,14 @@ def main(argv: list[str] | None = None) -> int:
         ("bootstrap", "Bootstrap orchestrator", cmd_bootstrap),
         ("state", "Show persistent state", cmd_state),
         ("verify", "Run health verification", cmd_verify),
+        ("install-skill", "Universal install skill", cmd_install_skill),
         ("version", "Show version", cmd_version),
     ]:
         p = sub.add_parser(name, help=help_)
         p.set_defaults(func=fn)
-        if name in ("status", "doctor", "plan", "bootstrap", "state", "verify"):
+        if name in ("status", "doctor", "plan", "bootstrap", "state", "verify", "install-skill"):
             p.add_argument("--json", action="store_true")
-        if name == "bootstrap":
+        if name in ("bootstrap", "install-skill"):
             p.add_argument("--dry-run", action="store_true", default=True)
             p.add_argument("--apply", action="store_true")
             p.add_argument("--no-verify", action="store_true")
