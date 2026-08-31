@@ -1,58 +1,31 @@
 # FROGE Agent — Live Tracker
 
-**Last updated:** 2026-08-31  
-**Purpose:** Single place to answer “What is done? What is next? What is blocked?”
+**Last updated:** 2026-08-31
 
 ## Project Snapshot
 
 | Question | Answer |
 |----------|--------|
-| What is FROGE? | Windows-first AI Development Control Plane |
-| Current phase | **Implementation Phase I-1 — Project Foundation** |
-| Last completed | Documentation foundation (Phase 0 + Phase 1 contracts) |
-| Currently in progress | I-1-001 Project packaging & core foundation |
-| Next after I-1-001 | I-1-002 CLI skeleton, then I-2 Environment Discovery |
-| Blocked | Nothing currently; external tool research required before I-7 |
-| Out of scope | MCP servers, Omni Router MCP, Mega MCP redesign, skill/plugin catalog, frontend/design.md |
+| Current phase | Implementation I-1 + I-2 complete |
+| Last completed | Project foundation + environment discovery |
+| Next | I-3 Dependency mgmt → I-4 Installation engine → I-5 Health → I-6 Bootstrap |
+| Out of scope | MCP / skills catalog / plugins / frontend |
 
 ## Status Board
 
-### Documentation Foundation
-- ✅ Phase 0 complete
-- ✅ Phase 1 architecture contracts (first drafts) complete
-
-### Implementation
-- 🟡 **I-1-001** Project packaging & core foundation (IN PROGRESS)
-- ⬜ I-1-002 CLI skeleton
-- ⬜ I-2-001 Environment discovery
+- ✅ I-1-001 Project foundation (packaging, config, logging, state, manifest, results)
+- ✅ I-1-002 CLI skeleton
+- ✅ I-2-001 Environment discovery
 - ⬜ I-3-001 Dependency management
 - ⬜ I-4-001 Installation engine
-- ⬜ I-5-001 Health / functional verification engine
+- ⬜ I-5-001 Health / verification engine
 - ⬜ I-6-001 Bootstrap orchestrator
-- ⬜ I-7-001 CodeBuff/FreeBuff workflow (after research)
+- ⬜ I-7+ Provider, agent, failover
 
-### Deferred (binding)
-- 🚫 MCP implementation (ADR-004)
-- 🚫 Omni Router MCP
-- 🚫 Mega MCP redesign
-- 🚫 Frontend / design.md (ADR-005)
-- 🚫 Large skill / plugin catalog
+## Evidence
 
-## Evidence Log (Recent)
-
-| Date | Event | Evidence |
-|------|-------|----------|
-| 2026-08-31 | Documentation foundation complete | Multiple commits; docs/* + ADRs on main |
-| 2026-08-31 | Implementation plan recorded | docs/IMPLEMENTATION-PLAN.md |
-| 2026-08-31 | Task & tracker transitioned to implementation phases | This commit |
-
-## How to Resume
-
-1. Read `docs/CURRENT-STATE.md`
-2. Read `docs/tracker.md` (this file)
-3. Read `docs/task.md` and `docs/IMPLEMENTATION-PLAN.md`
-4. Read relevant contracts (bootstrap.md, health.md, etc.)
-5. Select next ⬜/🟡 task whose dependencies are satisfied
-6. Follow AGENTS.md → implement → test → verify → update docs/task/tracker → commit
+- 20 unit tests PASS
+- `froge status` PASS
+- `froge doctor` PASS
 
 **Never claim COMPLETE without evidence.**

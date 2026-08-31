@@ -1,56 +1,38 @@
 # FROGE Agent — Current Repository State
 
-**Last audited:** 2026-08-31 (implementation-phase transition)
-**Commit at last audit:** 97d1538570db35bc53595069ad429157172832ba
+**Last audited:** 2026-08-31 (implementation in progress)
+**Branch:** main
 
-## Repository Structure (Verified)
+## Implemented (verified locally)
+
+- `pyproject.toml` + package layout under `src/froge/`
+- `ComponentState` lifecycle model (aligned with health.md / bootstrap.md)
+- `OperationResult` + `Evidence` contracts
+- `FrogeSettings` (defaults, env override, validation)
+- `ToolManifest` schema + `ToolRegistry` with conceptual tools (REQUIRES VALIDATION for external agents)
+- Environment discovery (`discover_environment`, `discover_executable`)
+- CLI: `froge status | tools | doctor | version`
+- 20 unit tests — all passing in sandbox
+
+## Evidence
 
 ```
-froge_agent/
-├── README.md
-├── AGENTS.md
-├── ORCHESTRATOR.md
-├── docs/
-│   ├── CURRENT-STATE.md
-│   ├── GAPS.md
-│   ├── IMPLEMENTATION-PLAN.md   ← new
-│   ├── flow.md
-│   ├── task.md
-│   ├── tracker.md
-│   ├── ARCHITECTURE.md
-│   ├── MCP_CONTROL_PLANE.md
-│   ├── ROADMAP.md
-│   ├── bootstrap.md
-│   ├── tools.md
-│   ├── agents.md
-│   ├── providers.md
-│   ├── skills.md
-│   ├── plugins.md
-│   ├── health.md
-│   ├── recovery.md
-│   ├── security.md
-│   ├── testing.md
-│   └── adr/ (ADR-001 … ADR-005)
-└── src/
-    └── froge/
-        └── __init__.py          # package stub only (__version__ = "0.1.0")
+pytest tests/ -v  → 20 passed
+froge status       → Registry PASS, 10 tools
+froge doctor       → Discovery PASS
 ```
 
-**Still absent:** pyproject.toml, tests/, config implementation, installation engine, any runtime logic beyond the stub.
+## Not yet implemented
 
-## Classification
+- Installation engine
+- Health / functional verification engine  
+- Bootstrap orchestrator
+- Provider abstraction / failover
+- Agent registry runtime
+- External tool adapters (all REQUIRES VALIDATION)
 
-| Area | Status |
-|------|--------|
-| Documentation foundation | COMPLETE |
-| Architecture contracts (docs) | COMPLETE (first drafts) |
-| Implementation code | NOT STARTED (only package name reserved) |
-| Tests | NOT STARTED |
-| Bootstrap / install orchestrator | DOCUMENTED ONLY |
-| External tools | REQUIRES VALIDATION (none integrated) |
-| MCP / skills / plugins / frontend | DEFERRED by ADR |
+## Deferred (ADR)
 
-## Next Work
-
-See `docs/IMPLEMENTATION-PLAN.md` and `docs/tracker.md`.  
-Active task: **I-1-001 Project packaging & core foundation**.
+- MCP servers, Omni Router MCP, Mega MCP redesign
+- Skills catalog / plugins
+- Frontend / design.md
