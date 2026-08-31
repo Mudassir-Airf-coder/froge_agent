@@ -1,42 +1,34 @@
 # FROGE Agent — Current Repository State
 
-**Last updated:** 2026-08-31
-**Status:** Bootstrap engine + persistence + adapters COMPLETE and verified
+**Last updated:** 2026-09-01
+**Status:** BOOTSTRAP ENGINE COMPLETE (+ provider foundation, error classification, safe exec)
 
 ## Implemented & Verified
 
 | Component | Status | Evidence |
 |-----------|--------|----------|
-| Packaging / config / logging / results / state | COMPLETE | tests |
-| Manifest + Registry | COMPLETE | 6 tests |
-| Discovery | COMPLETE | 3 tests + doctor |
-| Health ladder L1–L6 | COMPLETE | 3 tests |
-| Installation engine | COMPLETE | bootstrap |
-| Desired-state planner + cycle detection | COMPLETE | 4 tests |
-| Bootstrap orchestrator | COMPLETE | tests + CLI |
-| Persistent state store (atomic JSON) | COMPLETE | 4 tests |
-| Tool adapter abstraction | COMPLETE | 3 tests |
-| CLI: status, tools, doctor, plan, bootstrap, state, verify | COMPLETE | 8 tests |
-| --json output | COMPLETE | CLI tests |
-| E2E fake-tool bootstrap + idempotency | COMPLETE | 3 tests |
-| Unit/integration suite | **44 passed** | `pytest tests/ -v` |
-
-## Functional evidence
-
-```
-pytest tests/ -v                 → 44 passed
-froge status --json              → PASS
-froge verify --tool python       → PASS (L1–L5 PASS, L6 SKIP)
-froge bootstrap --dry-run        → PASS keep=4 requires_validation=7
-froge state                      → shows state.json path
-```
+| Packaging / config / logging / results / lifecycle | COMPLETE | tests |
+| Manifest + Registry | COMPLETE | tests |
+| Discovery | COMPLETE | tests + doctor |
+| Health ladder L1–L6 | COMPLETE | tests |
+| Installation engine (executil-backed) | COMPLETE | tests |
+| Error classification + recoverability | COMPLETE | 4 tests |
+| Safe command execution (`executil`) | COMPLETE | 3 tests |
+| Planner + cycle detection | COMPLETE | tests |
+| Bootstrap + persistence + audit | COMPLETE | tests |
+| Adapter abstraction | COMPLETE | tests |
+| Provider registry foundation (empty, extensible) | COMPLETE | 2 tests |
+| CLI: status, tools, doctor, plan, bootstrap, state, verify | COMPLETE | tests |
+| --json / dry-run / idempotency | COMPLETE | tests |
+| Repair / KEEP / REQUIRES_VALIDATION paths | COMPLETE | 5 tests |
+| Test suite | **58 passed** | `pytest tests/ -v` |
 
 ## Deferred
 
-MCP servers, Omni Router MCP, Mega MCP, skills catalog, plugins, frontend, Ollama, vLLM.
+MCP, Omni Router MCP, Mega MCP, skills, plugins, frontend, Ollama, vLLM, OHSC.
 
 ## Limitations
 
-- External tool install commands remain REQUIRES VALIDATION.
-- L6 functional tests not defined for system tools → INSTALLED not HEALTHY.
-- No concrete Windows winget adapters yet (architecture ready).
+- External AI tools remain REQUIRES_VALIDATION.
+- Provider registry is an empty foundation.
+- L6 not defined for system tools → INSTALLED not HEALTHY.

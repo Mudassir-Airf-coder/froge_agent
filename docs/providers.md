@@ -1,43 +1,38 @@
 # FROGE Provider & Model Architecture
 
-**Status:** DOCUMENTED ONLY (high-level)  
-**Last updated:** 2026-08-31
+**Status:** FOUNDATION IMPLEMENTED (interfaces only)  
+**Last updated:** 2026-09-01
 
 ## Separation of Concerns
 
 ```
-Agent
-  ↓
-Provider
-  ↓
-Model
+Agent → Provider → Model
 ```
 
-The orchestrator must not hard-code provider-specific behavior. Providers and models belong behind adapters / a registry.
+Bootstrap/install engine remains decoupled from providers.
 
-## Target Capabilities
+## Implemented
 
-- Provider discovery
-- Authentication (secure)
-- Model discovery (including free-model discovery where applicable)
-- Provider health
-- Model health (listing ≠ usable)
-- Failure classification
-- Failover to verified alternative
-- Cooldowns
-- Model-health memory (successful recovery choices remembered)
-- Same-session continuity (mechanism **TBD**)
+- `src/froge/providers.py`
+  - `ModelInfo`, `ProviderInfo` models
+  - `Provider` protocol
+  - `ProviderRegistry` (in-memory)
+  - `default_provider_registry()` — empty by design
 
-## Current Reality
+## Not implemented
 
-Only high-level mentions exist in architecture and orchestrator documents. No registry, no adapters, no health implementation.
+- Concrete providers
+- Authentication
+- Model discovery against live APIs
+- Failover / cooldowns
+- Omni Router MCP
 
 ## Explicit Restriction
 
-Omni Router MCP and any concrete provider implementation are **out of scope** for the current documentation-foundation phase. Only the architectural boundary is recorded here.
+Omni Router MCP, Ollama, vLLM, and any concrete provider backends remain **out of scope** until verified.
 
 ## Related
 
 - docs/recovery.md
 - docs/health.md
-- ORCHESTRATOR.md
+- ADR-004 (MCP deferred)
