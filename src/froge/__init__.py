@@ -1,3 +1,8 @@
-"""FROGE Agent core package."""
+"""FROGE Agent core package.
 
-__version__ = "0.1.0"
+Windows-first AI Development Control Plane.
+"""
+
+from froge.__version__ import __version__
+
+__all__ = ["__version__"]
